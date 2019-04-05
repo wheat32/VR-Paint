@@ -41,6 +41,10 @@
       "requirement": "optional"
     },
     {
+      "name": "/actions/default/in/WheelTouch",
+      "type": "vector2"
+    },
+    {
       "name": "/actions/default/out/Haptic",
       "type": "vibration"
     },
@@ -277,7 +281,7 @@
   "action_sets": [
     {
       "name": "/actions/default",
-      "usage": "single"
+      "usage": "leftright"
     },
     {
       "name": "/actions/platformer",
@@ -293,7 +297,7 @@
     },
     {
       "name": "/actions/htc_viu",
-      "usage": "leftright"
+      "usage": "single"
     }
   ],
   "default_bindings": [

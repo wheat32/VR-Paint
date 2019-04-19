@@ -120,12 +120,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &71499110 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 160596, guid: dc06161b6d97feb419f45f03b62e14b9,
-    type: 3}
-  m_PrefabInstance: {fileID: 796022315}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &71499113 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 485514, guid: dc06161b6d97feb419f45f03b62e14b9,
@@ -322,12 +316,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!1 &717274742 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 144230, guid: dc06161b6d97feb419f45f03b62e14b9,
-    type: 3}
-  m_PrefabInstance: {fileID: 796022315}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &734508232
 GameObject:
   m_ObjectHideFlags: 0
@@ -890,9 +878,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7464f78dc0722b4dbfceb8854a6c178, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftHand: {fileID: 717274742}
-  rightHand: {fileID: 71499110}
-  vertexGrouping: {fileID: 0}
+  penguPoint: {fileID: 5736999839615893943}
+  isPenguVisible: 0
+  showVerticies: 0
+  lineWidth: 0.01
+  timeBetweenDraws: 0.3
+  triggerThreshold: 0.7
 --- !u!114 &1654444054
 MonoBehaviour:
   m_ObjectHideFlags: 0

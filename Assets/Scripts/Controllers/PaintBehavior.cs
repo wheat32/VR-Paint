@@ -10,13 +10,13 @@ public class PaintBehavior : MonoBehaviour
     public bool showVerticies = false;
     private List<LineRenderer> lineRenderer = new List<LineRenderer>();
     private List<GameObject> parents = new List<GameObject>();
-    public float lineWidth = 0.01f;
     public float timeBetweenDraws = 0.05f;//DEFAULT: 0.05f
 
     private SteamVR_Action_Single trigger;
     private float timestamp;
     private List<List<GameObject>> lastPengus = new List<List<GameObject>>();
     private List<Color> allColors = new List<Color>();
+    private List<float> lineWidths = new List<float>();
     public float triggerThreshold = 0.7f;
     private bool triggered = false;
     private Color lastColor = Color.clear;
@@ -36,35 +36,47 @@ public class PaintBehavior : MonoBehaviour
 
         if (trigger.GetAxis(SteamVR_Input_Sources.Any) >= triggerThreshold && timestamp >= timeBetweenDraws)
         {
+            //Solid color
             if (triggered == false)
             {
                 parents.Add(new GameObject());
                 parents[parents.Count - 1].name = "Vertex Parent " + parents.Count;
+                parents[parents.Count - 1].transform.localPosition = penguPoint.transform.position;
+
+                lastColor = GameObject.Find("Scripts").GetComponent<ColorPicker>().getColor();
+
                 lastPengus.Add(new List<GameObject>());
                 lineRenderer.Add(new LineRenderer());
-                allColors.Add(GameObject.Find("Scripts").GetComponent<ColorPicker>().getColor());
+                allColors.Add(lastColor);
+                lineWidths.Add(GameObject.Find("Scripts").GetComponent<LineWidthBehavior>().getWidth());
                 lineRenderer[lineRenderer.Count - 1] = parents[parents.Count - 1].AddComponent<LineRenderer>();
                 lineRenderer[lineRenderer.Count - 1].material = new Material(Shader.Find("Sprites/Default"));
-                lineRenderer[lineRenderer.Count - 1].widthMultiplier = lineWidth;
-                lastColor = GameObject.Find("Scripts").GetComponent<ColorPicker>().getColor();
+                lineRenderer[lineRenderer.Count - 1].numCornerVertices = 4;
+                lineRenderer[lineRenderer.Count - 1].numCapVertices = 4;
+                lineRenderer[lineRenderer.Count - 1].widthMultiplier = lineWidths[lineWidths.Count-1];
+                
                 triggered = true;
             }
+            //For gradient colors
             else if (GameObject.Find("Scripts").GetComponent<ColorPicker>().getColor() != lastColor && triggered == true)
             {
                 lastColor = GameObject.Find("Scripts").GetComponent<ColorPicker>().getColor();
 
                 parents.Add(new GameObject());
                 parents[parents.Count - 1].name = "Vertex Parent " + parents.Count;
+                parents[parents.Count - 1].transform.localPosition = penguPoint.transform.position;
                 lastPengus.Add(new List<GameObject>());
                 lineRenderer.Add(new LineRenderer());
                 allColors.Add(lastColor);
+                lineWidths.Add(GameObject.Find("Scripts").GetComponent<LineWidthBehavior>().getWidth());
                 lineRenderer[lineRenderer.Count - 1] = parents[parents.Count - 1].AddComponent<LineRenderer>();
                 lineRenderer[lineRenderer.Count - 1].material = new Material(Shader.Find("Sprites/Default"));
-                lineRenderer[lineRenderer.Count - 1].widthMultiplier = lineWidth;
+                lineRenderer[lineRenderer.Count - 1].numCornerVertices = 4;
+                lineRenderer[lineRenderer.Count - 1].numCapVertices = 4;
+                lineRenderer[lineRenderer.Count - 1].widthMultiplier = lineWidths[lineWidths.Count-1];
                 colorChanged = true;
             }
 
-        
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphere.transform.SetParent(parents[parents.Count - 1].transform);
             Destroy(sphere.GetComponent<SphereCollider>());
@@ -94,7 +106,8 @@ public class PaintBehavior : MonoBehaviour
                     {
                         holdTightAsnee[j] = lastPengus[i][j].transform.position;
                     }
-                    
+
+                    lineRenderer[i].widthMultiplier = lineWidths[i];
                     lineRenderer[i].material.color = allColors[i];
                     lineRenderer[i].positionCount = lastPengus[i].Count;
                     lineRenderer[i].SetPositions(holdTightAsnee);

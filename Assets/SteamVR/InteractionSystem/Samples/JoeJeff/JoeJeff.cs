@@ -63,19 +63,6 @@ namespace Valve.VR.InteractionSystem.Sample
             CheckGrounded();
 
             rigidbody.freezeRotation = !held;
-
-            if (held == false)
-                FixRotation();
-        }
-
-        private void FixRotation()
-        {
-            Vector3 eulers = transform.eulerAngles;
-            eulers.x = 0;
-            eulers.z = 0;
-            Quaternion targetRotation = Quaternion.Euler(eulers);
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * (isGrounded ? 20 : 3));
         }
 
 

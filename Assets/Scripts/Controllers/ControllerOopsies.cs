@@ -8,23 +8,21 @@ public class ControllerOopsies : MonoBehaviour
     public GameObject penguPoint;//Origin of the paint
     public bool isPenguVisible = false;
     public bool showVerticies = false;
-    private List<LineRenderer> lineRenderer = new List<LineRenderer>();
-    private List<GameObject> parents = new List<GameObject>();
-    public float lineWidth = 0.01f;
+    private int parents = 0;
     public float timeBetweenDraws = 0.05f;//DEFAULT: 0.05f
 
     private SteamVR_Action_Single trigger;
     private float timestamp;
-    private List<List<GameObject>> lastPengus = new List<List<GameObject>>();
-    private List<Gradient> gradients = new List<Gradient>();
-    private GradientColorKey[] colorKeys = new GradientColorKey[] { new GradientColorKey(new Color(1f, 1f, 1f, 0f), 0f), new GradientColorKey(new Color(1f, 1f, 1f, 0f), 1f) };
-    private GradientAlphaKey[] alphaTest = new GradientAlphaKey[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(0f, 0.2f), new GradientAlphaKey(1f, 0.3f), new GradientAlphaKey(1f, 0.7f), new GradientAlphaKey(0f, 0.8f), new GradientAlphaKey(0f, 1f) };
     public float triggerThreshold = 0.7f;
     private bool triggered = false;
     private Color lastColor = Color.clear;
     private bool colorChanged = false;
     private GameObject lastVertex = null;
-    private GameObject secondToLastVertex = null;
+
+    private List<Color> colors = new List<Color>();
+    private List<GameObject> lastPengu = new List<GameObject>();
+    private LineRenderer line;
+    private GameObject dad;
 
     public void Awake()
     {
@@ -37,45 +35,52 @@ public class ControllerOopsies : MonoBehaviour
     {
         timestamp += Time.deltaTime;
 
-        Color newColor = new Color();
-
         if (trigger.GetAxis(SteamVR_Input_Sources.Any) >= triggerThreshold && timestamp >= timeBetweenDraws)
         {
+            //Solid color
             if (triggered == false)
             {
-                parents.Add(new GameObject());
-                parents[parents.Count - 1].name = "Vertex Parent " + parents.Count;
-                lastPengus.Add(new List<GameObject>());
-                lineRenderer.Add(new LineRenderer());
-                newColor = GameObject.Find("Scripts").GetComponent<ColorPicker>().getColor();
-                gradients.Add(new Gradient());
-                gradients[gradients.Count - 1].SetKeys(
-                    new GradientColorKey[] {new GradientColorKey(newColor, 0f), new GradientColorKey(newColor, 1f)},
-                    new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 1f) });
-                gradients[gradients.Count - 1].mode = GradientMode.Blend;
-                lineRenderer[lineRenderer.Count - 1] = parents[parents.Count - 1].AddComponent<LineRenderer>();
-                lineRenderer[lineRenderer.Count - 1].material = new Material(Shader.Find("Sprites/Default"));
-                lineRenderer[lineRenderer.Count - 1].widthMultiplier = lineWidth;
+                dad = new GameObject();
+                dad.name = "Vertex Parent " + ++parents;
+                dad.transform.localPosition = penguPoint.transform.position;
+
                 lastColor = GameObject.Find("Scripts").GetComponent<ColorPicker>().getColor();
+                colors.Add(lastColor);
+
+                line = new LineRenderer();
+                lastPengu.Clear();
+                colors.Clear();
+
+                line = dad.AddComponent<LineRenderer>();
+                line.material = new Material(Shader.Find("Sprites/Default"));
+                line.numCornerVertices = 4;
+                line.numCapVertices = 4;
+                line.widthMultiplier = GameObject.Find("Scripts").GetComponent<LineWidthBehavior>().getWidth();
+
                 triggered = true;
             }
+            //For gradient colors
             else if (GameObject.Find("Scripts").GetComponent<ColorPicker>().getColor() != lastColor && triggered == true)
             {
                 lastColor = GameObject.Find("Scripts").GetComponent<ColorPicker>().getColor();
 
-                parents.Add(new GameObject());
-                parents[parents.Count - 1].name = "Vertex Parent " + parents.Count;
-                lastPengus.Add(new List<GameObject>());
-                lineRenderer.Add(new LineRenderer());
-                newColor = GameObject.Find("Scripts").GetComponent<ColorPicker>().getColor();
-                lineRenderer[lineRenderer.Count - 1] = parents[parents.Count - 1].AddComponent<LineRenderer>();
-                lineRenderer[lineRenderer.Count - 1].material = new Material(Shader.Find("Sprites/Default"));
-                lineRenderer[lineRenderer.Count - 1].widthMultiplier = lineWidth;
+                dad = new GameObject();
+                dad.name = "Vertex Parent " + ++parents;
+                dad.transform.localPosition = penguPoint.transform.position;
+                colors.Add(lastColor);
+
+                lastPengu.Clear();
+
+                line = dad.AddComponent<LineRenderer>();
+                line.material = new Material(Shader.Find("Sprites/Default"));
+                line.numCornerVertices = 4;
+                line.numCapVertices = 4;
+                line.widthMultiplier = GameObject.Find("Scripts").GetComponent<LineWidthBehavior>().getWidth();
                 colorChanged = true;
             }
 
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            sphere.transform.SetParent(parents[parents.Count - 1].transform);
+            sphere.transform.SetParent(dad.transform);
             Destroy(sphere.GetComponent<SphereCollider>());
             sphere.GetComponent<MeshRenderer>().enabled = showVerticies;
             sphere.name = "Paint Vertex";
@@ -84,36 +89,27 @@ public class ControllerOopsies : MonoBehaviour
 
             if (lastVertex != null && colorChanged == true)
             {
-                if (secondToLastVertex != null)
-                {
-                    lastPengus[lastPengus.Count - 1].Add(secondToLastVertex);
-                }
-
-                lastPengus[lastPengus.Count - 1].Add(lastVertex);
+                lastPengu.Add(lastVertex);
             }
 
-            lastPengus[lastPengus.Count - 1].Add(sphere);
-            secondToLastVertex = lastVertex;
+            lastPengu.Add(sphere);
             lastVertex = sphere;//Save off the old vertex
 
-            //Iterate through all of the lines
-            for (int i = 0; i < lastPengus.Count; i++)
+            
+            if (lastPengu.Count > 1)
             {
-                if (lastPengus[i].Count > 1)
+                //holdTightAsnee will contain all of the verticies for a line
+                Vector3[] holdTightAsnee = new Vector3[lastPengu.Count];
+
+                //Iterate through the verticies on the indexed line
+                for (int i = 0; i < lastPengu.Count; i++)
                 {
-                    //holdTightAsnee will contain all of the verticies for a line
-                    Vector3[] holdTightAsnee = new Vector3[lastPengus[i].Count];
-
-                    //Iterate through the verticies on the indexed line
-                    for (int j = 0; j < lastPengus[i].Count; j++)
-                    {
-                        holdTightAsnee[j] = lastPengus[i][j].transform.position;
-                    }
-
-                    lineRenderer[i].colorGradient = gradients[i];
-                    lineRenderer[i].positionCount = lastPengus[i].Count;
-                    lineRenderer[i].SetPositions(holdTightAsnee);
+                    holdTightAsnee[i] = lastPengu[i].transform.position;
                 }
+
+                line.material.color = lastColor;
+                line.positionCount = lastPengu.Count;
+                line.SetPositions(holdTightAsnee);
             }
 
             timestamp = 0.0f;
@@ -124,7 +120,6 @@ public class ControllerOopsies : MonoBehaviour
             triggered = false;
             lastColor = Color.clear;
             lastVertex = null;
-            secondToLastVertex = null;
             colorChanged = false;
         }
     }

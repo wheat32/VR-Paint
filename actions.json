@@ -289,7 +289,7 @@
   "action_sets": [
     {
       "name": "/actions/default",
-      "usage": "leftright"
+      "usage": "single"
     },
     {
       "name": "/actions/platformer",
@@ -305,7 +305,7 @@
     },
     {
       "name": "/actions/htc_viu",
-      "usage": "single"
+      "usage": "leftright"
     }
   ],
   "default_bindings": [

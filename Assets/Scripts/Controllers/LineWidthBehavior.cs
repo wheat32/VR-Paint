@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
+using Valve.VR.InteractionSystem;
 
 public class LineWidthBehavior : MonoBehaviour
 {
@@ -16,8 +17,15 @@ public class LineWidthBehavior : MonoBehaviour
     private int currentWidth = -1;
     private bool widthChanged = false;
 
+    private Player player = null;
+    private Coroutine textHint;
+
     public void Awake()
     {
+        player = Valve.VR.InteractionSystem.Player.instance;
+
+        textHint = StartCoroutine(widthHintCoroutine());
+
         currentWidth = initialWidth;
         westDPad = SteamVR_Actions._default.decreaseWidth;
         eastDPad = SteamVR_Actions._default.increaseWidth;
@@ -49,6 +57,8 @@ public class LineWidthBehavior : MonoBehaviour
             {
                 currentWidth--;
                 widthChanged = true;
+                StopCoroutine(textHint);
+                ControllerButtonHints.HideTextHint(player.leftHand, SteamVR_Actions._default.decreaseWidth);
             }
         }
 
@@ -58,6 +68,8 @@ public class LineWidthBehavior : MonoBehaviour
             {
                 currentWidth++;
                 widthChanged = true;
+                StopCoroutine(textHint);
+                ControllerButtonHints.HideTextHint(player.leftHand, SteamVR_Actions._default.decreaseWidth);
             }
         }
 
@@ -74,5 +86,52 @@ public class LineWidthBehavior : MonoBehaviour
     public float getWidth()
     {
         return widthSizes[currentWidth];
+    }
+
+    private IEnumerator widthHintCoroutine()
+    {
+        float prevBreakTime = Time.time;
+        float prevHapticPulseTime = Time.time;
+
+        while (true)
+        {
+            bool pulsed = false;
+
+            //Show the hint on each eligible hand
+            foreach (Hand hand in player.hands)
+            {
+                bool isShowingHint = !string.IsNullOrEmpty(ControllerButtonHints.GetActiveHintText(hand, SteamVR_Actions._default.decreaseWidth));
+
+                if (isShowingHint == false)
+                {
+                    ControllerButtonHints.ShowTextHint(hand, SteamVR_Actions._default.decreaseWidth, "Press sides to adjust brush width");
+                    prevBreakTime = Time.time;
+                    prevHapticPulseTime = Time.time;
+                }
+
+                if (Time.time > prevHapticPulseTime + 0.05f)
+                {
+                    //Haptic pulse for a few seconds
+                    pulsed = true;
+
+                    hand.TriggerHapticPulse(500);
+                }
+            }
+
+            if (Time.time > prevBreakTime + 3.0f)
+            {
+                //Take a break for a few seconds
+                yield return new WaitForSeconds(3.0f);
+
+                prevBreakTime = Time.time;
+            }
+
+            if (pulsed)
+            {
+                prevHapticPulseTime = Time.time;
+            }
+
+            yield return null;
+        }
     }
 }

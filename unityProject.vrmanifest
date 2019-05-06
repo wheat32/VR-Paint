@@ -1,0 +1,16 @@
+{
+  "source": "Unity",
+  "applications": [
+    {
+      "app_key": "application.generated.unity.vrpaint.exe",
+      "launch_type": "url",
+      "url": "steam://launch/",
+      "action_manifest_path": "C:\\Users\\Jack\\Documents\\GitHub\\VR-Paint\\actions.json",
+      "strings": {
+        "en_us": {
+          "name": "VR-Paint [Testing]"
+        }
+      }
+    }
+  ]
+}

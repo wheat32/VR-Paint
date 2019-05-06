@@ -3,7 +3,7 @@
 --- !u!129 &1
 PlayerSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 16
+  serializedVersion: 17
   productGUID: 1cf284f9798998e47973df24207a710b
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
@@ -17,7 +17,7 @@ PlayerSettings:
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
-  m_ShowUnitySplashScreen: 1
+  m_ShowUnitySplashScreen: 0
   m_ShowUnitySplashLogo: 1
   m_SplashScreenOverlayOpacity: 1
   m_SplashScreenAnimation: 1
@@ -47,7 +47,7 @@ PlayerSettings:
   defaultScreenWidthWeb: 960
   defaultScreenHeightWeb: 600
   m_StereoRenderingPath: 0
-  m_ActiveColorSpace: 0
+  m_ActiveColorSpace: 1
   m_MTRendering: 1
   m_StackTraceTypes: 010000000100000001000000010000000100000001000000
   iosShowActivityIndicatorOnLoading: -1
@@ -65,6 +65,7 @@ PlayerSettings:
   disableDepthAndStencilBuffers: 0
   androidStartInFullscreen: 1
   androidRenderOutsideSafeArea: 1
+  androidUseSwappy: 0
   androidBlitType: 0
   defaultIsNativeResolution: 1
   macRetinaSupport: 1
@@ -118,7 +119,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 0.1
+  bundleVersion: 1
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -148,6 +149,7 @@ PlayerSettings:
     oculus:
       sharedDepthBuffer: 1
       dashSupport: 1
+      lowOverheadMode: 0
     enable360StereoCapture: 0
   isWsaHolographicRemotingEnabled: 0
   protectGraphicsMemory: 0
@@ -253,7 +255,7 @@ PlayerSettings:
   AndroidTargetArchitectures: 1
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: '{inproject}: '
+  AndroidKeystoreName: '{inproject}: {inproject}: '
   AndroidKeyaliasName: 
   AndroidBuildApkPerCpuArchitecture: 0
   AndroidTVCompatibility: 0
@@ -305,8 +307,8 @@ PlayerSettings:
   - m_BuildTarget: Standalone
     m_Enabled: 1
     m_Devices:
-    - OpenVR
     - Oculus
+    - OpenVR
   m_BuildTargetEnableVuforiaSettings: []
   openGLRequireES31: 0
   openGLRequireES31AEP: 0
@@ -528,6 +530,7 @@ PlayerSettings:
   monoEnv: 
   splashScreenBackgroundSourceLandscape: {fileID: 0}
   splashScreenBackgroundSourcePortrait: {fileID: 0}
+  blurSplashScreenBackground: 1
   spritePackerPolicy: 
   webGLMemorySize: 16
   webGLExceptionSupport: 1
@@ -544,7 +547,7 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLWasmStreaming: 0
   scriptingDefineSymbols:
-    1: VIU_PLUGIN
+    1: VIU_OPENVR_API;VIU_STEAMVR;VIU_STEAMVR_1_2_3_OR_NEWER;VIU_STEAMVR_2_0_0_OR_NEWER;VIU_STEAMVR_2_1_0_OR_NEWER;VIU_STEAMVR_2_2_0_OR_NEWER;VIU_PLUGIN
   platformArchitecture: {}
   scriptingBackend: {}
   il2cppCompilerConfiguration: {}
@@ -555,7 +558,8 @@ PlayerSettings:
   scriptingRuntimeVersion: 1
   gcIncremental: 0
   gcWBarrierValidation: 0
-  apiCompatibilityLevelPerPlatform: {}
+  apiCompatibilityLevelPerPlatform:
+    Standalone: 3
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
   metroPackageName: Template_3D
